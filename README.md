@@ -1,19 +1,18 @@
 # Linkcast
 
-Generate podcast episodes from a list of URLs. Articles are summarized for a senior developer audience using Claude, then converted to audio via OpenAI TTS.
+Generate podcast episodes from a list of URLs. Articles are summarized for a senior developer audience using OpenAI, then converted to audio via OpenAI TTS.
 
 ## Requirements
 
 - Python 3.11+
 - `ffmpeg` installed (`brew install ffmpeg` on macOS)
-- Anthropic API key (article summarization via Claude)
-- OpenAI API key (text-to-speech audio generation)
+- OpenAI API key (summarization and text-to-speech)
 
 ## Setup
 
 ```bash
 cp .env.example .env
-# Edit .env with your API keys
+# Edit .env with your OpenAI API key
 
 pip install -e .
 ```
@@ -36,8 +35,8 @@ python -m linkcast https://example.com/article1 https://example.com/article2
 
 ```
 --output, -o    Output file path (default: output/linkcast-YYYY-MM-DD.m4a)
---voice         TTS voice (default: onyx)
---model         Claude model for summarization
+--voices        Comma-separated TTS voices, cycled across segments (default: ash,coral,sage)
+--model         OpenAI model for summarization (default: gpt-4.1)
 --dry-run       Print generated script without running TTS
 ```
 
@@ -49,16 +48,18 @@ Preview the generated script without spending on TTS:
 python -m linkcast links.txt --dry-run
 ```
 
+## Environment Variables
+
+Set in `.env` or export directly:
+
+```
+OPENAI_API_KEY              (required)
+LINKCAST_SUMMARIZE_MODEL    Summarization model (default: gpt-4.1)
+LINKCAST_TTS_MODEL          TTS model (default: gpt-4o-mini-tts)
+LINKCAST_TTS_VOICES         Comma-separated voices (default: ash,coral,sage)
+LINKCAST_OUTPUT_DIR          Output directory (default: output)
+```
+
 ## Output
 
-Produces an M4A (AAC) file — native iPhone format, smaller than MP3, with metadata.
-
-## Transferring to iPhone
-
-1. **AirDrop** (Mac): Right-click the `.m4a` file → Share → AirDrop → select your iPhone
-2. **iCloud Drive**: Copy the file to `~/Library/Mobile Documents/com~apple~CloudDocs/` — it appears in the Files app on iPhone
-3. **Apple Music**: Drag the `.m4a` into Music.app → sync to iPhone
-
-## Cost
-
-~$0.80 per episode (5 articles): ~$0.05 Claude + ~$0.75 OpenAI TTS.
+Produces an M4A (AAC) file with metadata (title, description, date). If iCloud Drive is available at `~/Library/Mobile Documents/com~apple~CloudDocs/`, the episode is automatically copied there as `linkcast-latest.m4a` for easy iPhone access.
