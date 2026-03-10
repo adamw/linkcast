@@ -1,0 +1,18 @@
+[project]
+name = "linkcast"
+version = "0.1.0"
+description = "Generate podcast episodes from a list of URLs"
+requires-python = ">=3.11"
+dependencies = [
+    "openai",
+    "trafilatura",
+    "pydub",
+    "audioop-lts",
+    "python-dotenv",
+]
+
+[tool.setuptools.packages.find]
+include = ["linkcast*"]
+
+[project.scripts]
+linkcast = "linkcast.__main__:main"
